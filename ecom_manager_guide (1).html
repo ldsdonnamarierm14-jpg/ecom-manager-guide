@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E-Commerce Admin Manager Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d0f14;
+    --bg2: #13161e;
+    --bg3: #1a1e28;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --text: #e8eaf0;
+    --muted: #7a7f96;
+    --accent: #4f8ef7;
+    --accent2: #2eca8b;
+    --accent3: #f5a623;
+    --accent4: #e05c5c;
+    --amazon: #ff9900;
+    --font: 'DM Sans', sans-serif;
+    --mono: 'DM Mono', monospace;
+  }
+
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 15px; line-height: 1.6; min-height: 100vh; }
+
+  /* SIDEBAR */
+  .layout { display: flex; min-height: 100vh; }
+  .sidebar {
+    width: 240px; min-height: 100vh; background: var(--bg2);
+    border-right: 1px solid var(--border); padding: 28px 0;
+    position: fixed; top: 0; left: 0; display: flex; flex-direction: column;
+    z-index: 100; overflow-y: auto;
+  }
+  .sidebar-logo { padding: 0 20px 24px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+  .sidebar-logo .logo-tag { font-size: 10px; letter-spacing: 0.12em; color: var(--muted); text-transform: uppercase; font-family: var(--mono); }
+  .sidebar-logo h2 { font-size: 15px; font-weight: 600; color: var(--text); margin-top: 4px; line-height: 1.3; }
+
+  .nav-section { padding: 0 12px 8px; }
+  .nav-section-label { font-size: 10px; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase; font-family: var(--mono); padding: 0 8px; margin-bottom: 6px; margin-top: 16px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px; padding: 9px 12px;
+    border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 400;
+    color: var(--muted); transition: all 0.15s; border: none; background: none;
+    width: 100%; text-align: left;
+  }
+  .nav-item:hover { background: var(--bg3); color: var(--text); }
+  .nav-item.active { background: rgba(79,142,247,0.12); color: var(--accent); font-weight: 500; }
+  .nav-item .nav-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.5; flex-shrink: 0; }
+  .nav-item.active .nav-dot { opacity: 1; }
+  .nav-badge { font-size: 10px; padding: 2px 7px; border-radius: 20px; background: rgba(255,153,0,0.15); color: var(--amazon); margin-left: auto; font-family: var(--mono); }
+
+  /* MAIN */
+  .main { margin-left: 240px; flex: 1; min-height: 100vh; }
+  .page { display: none; padding: 40px 48px; max-width: 900px; animation: fadeIn 0.2s ease; }
+  .page.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  .page-header { margin-bottom: 32px; }
+  .page-eyebrow { font-size: 11px; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase; font-family: var(--mono); margin-bottom: 10px; }
+  .page-title { font-size: 28px; font-weight: 600; color: var(--text); line-height: 1.2; margin-bottom: 10px; }
+  .page-desc { font-size: 14px; color: var(--muted); line-height: 1.7; max-width: 560px; }
+
+  /* CARDS */
+  .card-grid { display: grid; gap: 14px; }
+  .card-grid.cols2 { grid-template-columns: 1fr 1fr; }
+  .card-grid.cols3 { grid-template-columns: repeat(3, 1fr); }
+  .card {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 12px;
+    padding: 18px 20px; transition: border-color 0.15s, background 0.15s;
+  }
+  .card:hover { border-color: var(--border2); background: var(--bg3); }
+  .card-icon { font-size: 20px; margin-bottom: 10px; }
+  .card h4 { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+  .card p, .card li { font-size: 13px; color: var(--muted); line-height: 1.7; }
+  .card ul { padding-left: 1rem; }
+  .card li { margin-bottom: 3px; }
+
+  /* CLICKABLE CHANNEL CARDS */
+  .channel-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 28px; }
+  .channel-btn {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px 18px; cursor: pointer; text-align: left; transition: all 0.15s;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .channel-btn:hover { border-color: var(--border2); background: var(--bg3); transform: translateY(-1px); }
+  .channel-btn.active { border-color: var(--accent); background: rgba(79,142,247,0.08); }
+  .channel-btn .ch-name { font-size: 14px; font-weight: 600; color: var(--text); }
+  .channel-btn .ch-cat { font-size: 11px; color: var(--muted); font-family: var(--mono); }
+
+  .channel-detail { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 24px; display: none; animation: fadeIn 0.2s; }
+  .channel-detail.visible { display: block; }
+  .channel-detail h3 { font-size: 17px; font-weight: 600; color: var(--text); margin-bottom: 18px; }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .detail-item { background: var(--bg3); border-radius: 10px; padding: 14px 16px; border: 1px solid var(--border); }
+  .detail-label { font-size: 10px; letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; font-family: var(--mono); margin-bottom: 5px; }
+  .detail-val { font-size: 13px; color: var(--text); line-height: 1.6; }
+
+  /* ACCORDION */
+  .accordion { margin-bottom: 8px; }
+  .acc-header {
+    width: 100%; background: var(--bg2); border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 18px; display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer; font-size: 14px; font-weight: 500; color: var(--text); text-align: left;
+    transition: all 0.15s;
+  }
+  .acc-header:hover { background: var(--bg3); border-color: var(--border2); }
+  .acc-header.open { border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-color: var(--accent); color: var(--accent); }
+  .acc-arrow { transition: transform 0.2s; font-size: 16px; color: var(--muted); }
+  .acc-header.open .acc-arrow { transform: rotate(180deg); }
+  .acc-body {
+    background: var(--bg2); border: 1px solid var(--accent); border-top: none;
+    border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;
+    padding: 0 18px; max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.2s;
+  }
+  .acc-body.open { max-height: 400px; padding: 14px 18px; }
+  .acc-body ul { padding-left: 1.1rem; }
+  .acc-body li { font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 5px; }
+  .acc-body li strong { color: var(--text); font-weight: 500; }
+
+  /* CHECKLIST */
+  .checklist { list-style: none; }
+  .checklist li { display: flex; align-items: flex-start; gap: 11px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .checklist li:last-child { border-bottom: none; }
+  .check-mark { color: var(--accent2); font-size: 14px; margin-top: 1px; flex-shrink: 0; }
+
+  /* BADGES */
+  .badge { font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 500; font-family: var(--mono); }
+  .b-blue { background: rgba(79,142,247,0.15); color: #7db3ff; }
+  .b-green { background: rgba(46,202,139,0.15); color: #2eca8b; }
+  .b-amber { background: rgba(245,166,35,0.15); color: var(--accent3); }
+  .b-red { background: rgba(224,92,92,0.15); color: #f08080; }
+  .b-orange { background: rgba(255,153,0,0.15); color: var(--amazon); }
+
+  /* KPI ROW */
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 28px; }
+  .kpi-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; }
+  .kpi-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; font-family: var(--mono); letter-spacing: 0.04em; }
+  .kpi-val { font-size: 22px; font-weight: 600; color: var(--text); }
+  .kpi-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+  /* SECTION LABEL */
+  .sec-label { font-size: 11px; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase; font-family: var(--mono); margin: 28px 0 14px; }
+
+  /* PRIORITY BARS */
+  .priority-list { list-style: none; }
+  .pri-row { display: flex; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .pri-row:last-child { border-bottom: none; }
+  .pri-label { flex: 1; font-size: 13px; color: var(--muted); }
+  .pri-bar-wrap { width: 120px; height: 5px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+  .pri-bar { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+
+  /* TAGS */
+  .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .tag { font-size: 12px; background: var(--bg3); color: var(--muted); padding: 4px 12px; border-radius: 20px; border: 1px solid var(--border); font-family: var(--mono); }
+
+  /* IMAGE/STEP LIST */
+  .step-list { list-style: none; counter-reset: step; }
+  .step-item { counter-increment: step; display: flex; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--border); align-items: flex-start; }
+  .step-item:last-child { border-bottom: none; }
+  .step-num { width: 24px; height: 24px; border-radius: 50%; background: rgba(79,142,247,0.15); color: var(--accent); font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; font-family: var(--mono); }
+  .step-content h5 { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+  .step-content p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+  /* AMAZON SPECIAL */
+  .amazon-header { display: flex; align-items: center; gap: 10px; padding: 14px 18px; background: rgba(255,153,0,0.07); border: 1px solid rgba(255,153,0,0.2); border-radius: 10px; margin-bottom: 24px; }
+  .amazon-header .amz-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--amazon); }
+  .amazon-header span { font-size: 13px; color: var(--amazon); font-weight: 500; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg2); }
+  ::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 3px; }
+
+  @media (max-width: 768px) {
+    .sidebar { width: 100%; min-height: auto; position: relative; }
+    .main { margin-left: 0; }
+    .page { padding: 24px 20px; }
+    .kpi-row { grid-template-columns: 1fr 1fr; }
+    .card-grid.cols2, .card-grid.cols3, .channel-grid, .detail-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-tag">Admin Manager</div>
+    <h2>E-Com Channel Guide</h2>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-label">Start here</div>
+    <button class="nav-item active" onclick="showPage('overview', this)"><span class="nav-dot"></span> Overview</button>
+    <button class="nav-item" onclick="showPage('role', this)"><span class="nav-dot"></span> Role & Responsibilities</button>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-label">Channels</div>
+    <button class="nav-item" onclick="showPage('amazon', this)"><span class="nav-dot"></span> Amazon <span class="nav-badge">★ Priority</span></button>
+    <button class="nav-item" onclick="showPage('walmart', this)"><span class="nav-dot"></span> Walmart</button>
+    <button class="nav-item" onclick="showPage('chewy', this)"><span class="nav-dot"></span> Chewy</button>
+    <button class="nav-item" onclick="showPage('lowes', this)"><span class="nav-dot"></span> Lowe's</button>
+    <button class="nav-item" onclick="showPage('tsc', this)"><span class="nav-dot"></span> TSC</button>
+    <button class="nav-item" onclick="showPage('wayfair', this)"><span class="nav-dot"></span> Wayfair</button>
+    <button class="nav-item" onclick="showPage('homedepot', this)"><span class="nav-dot"></span> Home Depot</button>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-label">Strategy</div>
+    <button class="nav-item" onclick="showPage('content', this)"><span class="nav-dot"></span> Content Excellence</button>
+    <button class="nav-item" onclick="showPage('sales', this)"><span class="nav-dot"></span> Sales & Promos</button>
+    <button class="nav-item" onclick="showPage('ops', this)"><span class="nav-dot"></span> Operations</button>
+    <button class="nav-item" onclick="showPage('kpis', this)"><span class="nav-dot"></span> KPIs & Reporting</button>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+<!-- OVERVIEW -->
+<div id="page-overview" class="page active">
+  <div class="page-header">
+    <div class="page-eyebrow">Getting started</div>
+    <h1 class="page-title">E-Commerce Channel<br>Management Guide</h1>
+    <p class="page-desc">Your complete playbook for driving sales across Amazon, Walmart, Chewy, Lowe's, TSC, Wayfair, and Home Depot — with a deep focus on content and revenue growth.</p>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi-card"><div class="kpi-label">Channels</div><div class="kpi-val">7</div><div class="kpi-sub">Major retail platforms</div></div>
+    <div class="kpi-card"><div class="kpi-label">Top Priority</div><div class="kpi-val" style="color:var(--amazon)">Amazon</div><div class="kpi-sub">Volume + complexity</div></div>
+    <div class="kpi-card"><div class="kpi-label">Focus Areas</div><div class="kpi-val">3</div><div class="kpi-sub">Content · Sales · Ops</div></div>
+    <div class="kpi-card"><div class="kpi-label">Daily Tasks</div><div class="kpi-val">8+</div><div class="kpi-sub">Monitoring & actions</div></div>
+  </div>
+
+  <div class="sec-label">3 core pillars of the role</div>
+  <div class="card-grid cols3">
+    <div class="card" style="border-left:3px solid var(--accent); cursor:pointer;" onclick="showPage('content', document.querySelector('[onclick*=content]'))">
+      <div class="card-icon">📄</div>
+      <h4>Content Excellence</h4>
+      <p>Titles, bullets, A+ pages, images, SEO — the foundation of discoverability and conversion on every channel.</p>
+    </div>
+    <div class="card" style="border-left:3px solid var(--accent2); cursor:pointer;" onclick="showPage('sales', document.querySelector('[onclick*=sales]'))">
+      <div class="card-icon">📈</div>
+      <h4>Sales Acceleration</h4>
+      <p>Pricing strategy, promotions, advertising (PPC), deals, and seasonal campaigns to drive revenue growth.</p>
+    </div>
+    <div class="card" style="border-left:3px solid var(--accent3); cursor:pointer;" onclick="showPage('ops', document.querySelector('[onclick*=ops]'))">
+      <div class="card-icon">⚙️</div>
+      <h4>Operational Health</h4>
+      <p>Inventory, compliance, suppression fixes, chargebacks, account health scores, and retailer SLAs.</p>
+    </div>
+  </div>
+
+  <div class="sec-label">Channel quick-jump</div>
+  <div class="channel-grid">
+    <button class="channel-btn" onclick="showPage('amazon', document.querySelector('[onclick*=amazon]'))">
+      <span class="ch-name">Amazon</span>
+      <span class="ch-cat">🟠 Highest priority · Deep dive inside</span>
+    </button>
+    <button class="channel-btn" onclick="showPage('walmart', document.querySelector('[onclick*=walmart]'))">
+      <span class="ch-name">Walmart</span>
+      <span class="ch-cat">Mass Retail · 2nd largest US e-com</span>
+    </button>
+    <button class="channel-btn" onclick="showPage('chewy', document.querySelector('[onclick*=chewy]'))">
+      <span class="ch-name">Chewy</span>
+      <span class="ch-cat">Pet Specialty · High loyalty base</span>
+    </button>
+    <button class="channel-btn" onclick="showPage('lowes', document.querySelector('[onclick*=lowes]'))">
+      <span class="ch-name">Lowe's</span>
+      <span class="ch-cat">Home Improvement · Wholesale</span>
+    </button>
+    <button class="channel-btn" onclick="showPage('tsc', document.querySelector('[onclick*=tsc]'))">
+      <span class="ch-name">Tractor Supply Co.</span>
+      <span class="ch-cat">Farm & Ranch · Rural lifestyle</span>
+    </button>
+    <button class="channel-btn" onclick="showPage('wayfair', document.querySelector('[onclick*=wayfair]'))">
+      <span class="ch-name">Wayfair</span>
+      <span class="ch-cat">Home Goods · Dropship model</span>
+    </button>
+  </div>
+  <div class="channel-grid" style="grid-template-columns:1fr 2fr;">
+    <button class="channel-btn" onclick="showPage('homedepot', document.querySelector('[onclick*=homedepot]'))">
+      <span class="ch-name">Home Depot</span>
+      <span class="ch-cat">Largest US DIY retailer</span>
+    </button>
+    <div class="card" style="border-style:dashed;">
+      <p style="font-size:12px;">Click any channel above to jump to its dedicated playbook page — including content rules, key KPIs, compliance requirements, and sales drivers.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ROLE PAGE -->
+<div id="page-role" class="page">
+  <div class="page-header">
+    <div class="page-eyebrow">Role definition</div>
+    <h1 class="page-title">Responsibilities</h1>
+    <p class="page-desc">What the Administrative Manager owns across all 7 e-commerce channels.</p>
+  </div>
+
+  <div class="sec-label">Core ownership areas</div>
+  <ul class="checklist">
+    <li><span class="check-mark">✓</span> Own product catalog setup, updates, and content quality across all channels</li>
+    <li><span class="check-mark">✓</span> Manage and optimize advertising budgets (Amazon PPC, Walmart Connect, etc.)</li>
+    <li><span class="check-mark">✓</span> Coordinate promotions, deals, and markdown calendars with internal stakeholders</li>
+    <li><span class="check-mark">✓</span> Monitor account health — suppression fixes, policy violations, chargebacks</li>
+    <li><span class="check-mark">✓</span> Track and report weekly/monthly KPIs: sales, CVR, ACoS, Buy Box %</li>
+    <li><span class="check-mark">✓</span> Ensure inventory accuracy and flag stock-out risks to supply chain team</li>
+    <li><span class="check-mark">✓</span> Build relationships with channel vendor managers for co-op funding & placements</li>
+    <li><span class="check-mark">✓</span> Lead seasonal readiness planning (Q4, Prime Day, Black Friday, spring cycles)</li>
+    <li><span class="check-mark">✓</span> Maintain EDI and retailer compliance for vendor channels</li>
+    <li><span class="check-mark">✓</span> Manage unauthorized seller / Buy Box hijacker issues</li>
+  </ul>
+
+  <div class="sec-label">Daily rhythm (30-minute morning check)</div>
+  <ul class="step-list">
+    <li class="step-item"><span class="step-num">1</span><div class="step-content"><h5>Account health dashboards</h5><p>Check Amazon Seller/Vendor Central, Walmart Supplier Center, Chewy portal — scan for red flags (ODR, suppressions, violations).</p></div></li>
+    <li class="step-item"><span class="step-num">2</span><div class="step-content"><h5>Open customer messages & cases</h5><p>Amazon has a 24-hour SLA. Prioritize negative feedback and A-to-Z claims first.</p></div></li>
+    <li class="step-item"><span class="step-num">3</span><div class="step-content"><h5>Suppressed / inactive listings</h5><p>Resolve same day. A suppressed listing earns zero revenue — treat it like a P1 issue.</p></div></li>
+    <li class="step-item"><span class="step-num">4</span><div class="step-content"><h5>Inventory levels</h5><p>Flag anything under 2-week supply to supply chain immediately. Stock-outs tank organic rank.</p></div></li>
+    <li class="step-item"><span class="step-num">5</span><div class="step-content"><h5>Ad spend pacing</h5><p>Are campaigns hitting daily budgets? Any major ACoS spikes overnight? Adjust bids if needed.</p></div></li>
+  </ul>
+</div>
+
+<!-- AMAZON PAGE -->
+<div id="page-amazon" class="page">
+  <div class="page-header">
+    <div class="page-eyebrow">Deep dive</div>
+    <h1 class="page-title">Amazon Playbook</h1>
+    <p class="page-desc">The most complex channel in your portfolio — deserves 40–50% of your total management time.</p>
+  </div>
+
+  <div class="amazon-header">
+    <span class="amz-dot"></span>
+    <span>Amazon combines the highest sales volume with the most complex ecosystem: A9/A10 algorithm, PPC, FBA logistics, strict compliance, and constant listing suppression risks.</span>
+  </div>
+
+  <div class="sec-label">Listing content — click each to expand</div>
+  <div class="accordion">
+    <button class="acc-header" onclick="toggleAcc(this)">📝 Product Title — the most important SEO field <span class="acc-arrow">▾</span></button>
+    <div class="acc-body">
+      <ul>
+        <li>Formula: <strong>Brand + Main Keyword + Key Feature + Size/Quantity/Variant</strong></li>
+        <li>Keep under 200 characters — mobile shows ~80 chars, so lead with the most important info</li>
+        <li>Capitalize major words; no ALL-CAPS, no symbols like !, $, or *</li>
+        <li>Front-load primary search keyword naturally — no keyword stuffing</li>
+        <li>Example: <strong>"BrandName 50-lb Premium Dog Food — High Protein, Grain-Free, Adult Breeds, 30 lb Bag"</strong></li>
+      </ul>
+    </div>
+  </div>
+  <div class="accordion">
+    <button class="acc-header" onclick="toggleAcc(this)">🔵 Bullet Points — 5 key features that convert <span class="acc-arrow">▾</span></button>
+    <div class="acc-body">
+      <ul>
+        <li>Each bullet = one benefit, starting with a bold ALL-CAPS label (e.g., <strong>EASY INSTALLATION –</strong>)</li>
+        <li>Lead with the benefit, not the feature: <strong>"Reduces energy bills by 30%"</strong> not "Has insulation"</li>
+        <li>Address common customer questions/objections in bullets 3–5</li>
+        <li>Include secondary keywords naturally without stuffing</li>
+        <li>Keep each bullet under 200 characters — mobile truncates long bullets</li>
+      </ul>
+    </div>
+  </div>
+  <div class="accordion">
+    <button class="acc-header" onclick="toggleAcc(this)">⭐ A+ Content — can lift CVR by 3–10% <span class="acc-arrow">▾</span></button>
+    <div class="acc-body">
+      <ul>
+        <li>Prioritize A+ for your top 20% ASINs by revenue first — highest ROI</li>
+        <li>Use comparison charts to cross-sell SKUs and explain variants</li>
+        <li>Lifestyle imagery + feature callouts outperform pure product shots</li>
+        <li>Brand Stories module: tell your brand narrative, build trust and loyalty</li>
+        <li>A++ (Premium A+): reserved for top sellers — includes video, hotspot images, Q&A</li>
+        <li>Avoid: keyword stuffing, blurry images, generic copy that fits any brand</li>
+      </ul>
+    </div>
+  </div>
+  <div class="accordion">
+    <button class="acc-header" onclick="toggleAcc(this)">📸 Images — the 7-image strategy that sells <span class="acc-arrow">▾</span></button>
+    <div class="acc-body">
+      <ul>
+        <li><strong>Image 1 (Hero):</strong> White background, product only, fills 85% of frame — no lifestyle</li>
+        <li><strong>Image 2:</strong> Key features callout/infographic with dimensions or components labeled</li>
+        <li><strong>Image 3:</strong> In-use lifestyle shot — product in real environment, aspirational</li>
+        <li><strong>Image 4:</strong> Close-up of differentiating feature (material, mechanism, finish)</li>
+        <li><strong>Image 5:</strong> Comparison chart vs competitor or older model</li>
+        <li><strong>Image 6:</strong> Packaging, certifications, or "what's in the box"</li>
+        <li><strong>Image 7:</strong> Social proof / review highlight or usage instruction graphic</li>
+        <li>Minimum 1500×1500px; JPEG preferred; upload 2000px+ to enable customer zoom</li>
+      </ul>
+    </div>
+  </div>
+  <div class="accordion">
+    <button class="acc-header" onclick="toggleAcc(this)">🔍 Backend Keywords & SEO indexing <span class="acc-arrow">▾</span></button>
+    <div class="acc-body">
+      <ul>
+        <li>250 bytes in Search Terms field — use synonyms, alternate spellings, long-tail terms</li>
+        <li>Do NOT repeat words already in your title — Amazon already indexes those</li>
+        <li>Research tools: Helium 10, Jungle Scout, DataDive, or Amazon Brand Analytics</li>
+        <li>Subject Matter fields (up to 5×50 chars): competitor conquesting terms go here</li>
+        <li>Refresh keywords quarterly using Brand Analytics search frequency data</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sec-label">Amazon advertising (PPC) — 4 campaign types</div>
+  <div class="card-grid cols2">
+    <div class="card">
+      <h4>🎯 Sponsored Products</h4>
+      <p>Most impactful type. Target high-intent keywords and competitor ASINs. Run auto campaigns to harvest new keywords, manual campaigns to scale winners. Review weekly.</p>
+    </div>
+    <div class="card">
+      <h4>🏆 Sponsored Brands</h4>
+      <p>Top-of-search headline + video ads. Drive to your Brand Store or best-seller ASIN. Excellent for new product launches and brand awareness campaigns.</p>
+    </div>
+    <div class="card">
+      <h4>📍 Sponsored Display</h4>
+      <p>Retargeting and product detail page placements. Reach shoppers who viewed your product but didn't buy. Also targets competitor product pages effectively.</p>
+    </div>
+    <div class="card">
+      <h4>📡 DSP (Demand Side Platform)</h4>
+      <p>Programmatic off-Amazon advertising. Best for brands spending $50K+/month. Ideal for new launches and seasonal campaigns with larger budgets.</p>
+    </div>
+  </div>
+
+  <div class="sec-label">PPC KPIs to monitor weekly</div>
+  <ul class="priority-list">
+    <li class="pri-row"><span class="pri-label">ACoS — target &lt;25% for mature products</span><div class="pri-bar-wrap"><div class="pri-bar" style="width:95%;background:var(--accent3);"></div></div><span class="badge b-amber">Weekly</span></li>
+    <li class="pri-row"><span class="pri-label">TACoS (Total ACoS) — below 12% is healthy</span><div class="pri-bar-wrap"><div class="pri-bar" style="width:90%;background:var(--accent3);"></div></div><span class="badge b-amber">Weekly</span></li>
+    <li class="pri-row"><span class="pri-label">CTR — 0.4%+ on Sponsored Products</span><div class="pri-bar-wrap"><div class="pri-bar" style="width:75%;background:var(--accent);"></div></div><span class="badge b-blue">Weekly</span></li>
+    <li class="pri-row"><span class="pri-label">CVR — benchmark against category average</span><div class="pri-bar-wrap"><div class="pri-bar" style="width:70%;background:var(--accent);"></div></div><span class="badge b-blue">Weekly</span></li>
+    <li class="pri-row"><span class="pri-label">Impression Share on target keywords</span><div class="pri-bar-wrap"><div class="pri-bar" style="width:50%;background:var(--accent2);"></div></div><span class="badge b-green">Monthly</span></li>
+  </ul>
+
+  <div class="sec-label">Account health & compliance</div>
+  <ul class="checklist">
+    <li><span class="check-mark">✓</span> Order Defect Rate (ODR) — keep below 1%</li>
+    <li><span class="check-mark">✓</span> Pre-fulfillment cancel rate below 2.5%; late shipment below 4%</li>
+    <li><span class="check-mark">✓</span> Resolve listing suppressions within 24 hours — check Manage Inventory daily</li>
+    <li><span class="check-mark">✓</span> Respond to all customer messages within 24 hours (Amazon policy)</li>
+    <li><span class="check-mark">✓</span> Audit for unauthorized sellers / Buy Box hijackers monthly</li>
+    <li><span class="check-mark">✓</span> Keep FBA IPI score above 400 — avoid long-term storage fees</li>
+  </ul>
+</div>
+
+<!-- WALMART PAGE -->
+<div id="page-walmart" class="page">
+  <div class="page-header">
+    <div class="page-eyebrow">Channel playbook</div>
+    <h1 class="page-title">Walmart</h1>
+    <p class="page-desc">Mass retail — 2nd largest US e-commerce channel. Less competition than Amazon in most categories with lower PPC CPCs.</p>
+  </div>
+  <div class="card-grid cols2">
+    <div class="card"><h4>📊 Listing Quality Score (LQS)</h4><p>Walmart's content score — target 80+. Fill every attribute: title, description, 4+ images, complete specs, and all category-specific fields.</p></div>
+    <div class="card"><h4>🛒 Pro Seller Badge</h4><p>Equivalent to Amazon's Buy Box. Achieved by maintaining strong seller metrics: on-time delivery, low cancel rate, valid tracking, and high ratings.</p></div>
+    <div class="card"><h4>📦 Walmart Fulfillment Services (WFS)</h4><p>Enroll top SKUs in WFS to boost Buy Box eligibility and unlock Walmart+ 2-day shipping badge — a major conversion driver.</p></div>
+    <div class="card"><h4>💰 Walmart Connect (PPC)</h4><p>Sponsored Products and Sponsored Brands mirror Amazon's structure. Lower CPCs than Amazon — a major opportunity in competitive categories.</p></div>
+    <div class="card"><h4>⚠️ Price Parity Rule</h4><p>Walmart enforces strict price parity — if your Amazon price is lower, Walmart will automatically unpublish your listing. Monitor pricing daily across channels.</p></div>
+    <div class="card"><h4>🎯 Savings Spotlight & Rollback</h4><p>Work with your Walmart buyer to participate in Rollback events and Savings Spotlight placements — these drive significant incremental traffic.</p></div>
+  </div>
+  <div class="sec-label">Key compliance KPIs</div>
+  <ul class="checklist">
+    <li><span class="check-mark">✓</span> On-Time Delivery Rate: target 95%+</li>
+    <li><span class="check-mark">✓</span> Valid Tracking Rate: target 99%+</li>
+    <li><span class="check-mark">✓</span> Cancellation Rate: keep below 2%</li>
+    <li><span class="check-mark">✓</span> GMV (Gross Merchandise Value) — primary revenue metric</li>
+    <li><span class="check-mark">✓</span> LQS score per item — fix anything below 70 immediately</li>
+  </ul>
+</div>
+
+<!-- CHEWY PAGE -->
+<div id="page-chewy" class="page">
+  <div class="page-header">
+    <div class="page-eyebrow">Channel playbook</div>
+    <h1 class="page-title">Chewy</h1>
+    <p class="page-desc">Pet specialty retailer with an intensely loyal customer base. Primarily a wholesale/vendor relationship — some brands also sell on Chewy Marketplace (3P).</p>
+  </div>
+  <div class="card-grid cols2">
+    <div class="card"><h4>🐾 Required Pet Attributes</h4><p>Species, life stage, breed size, flavor, weight, ingredient list, guaranteed analysis, and nutritional information are all mandatory fields — missing any will suppress your listing.</p></div>
+    <div class="card"><h4>📸 Emotional Photography</h4><p>Lifestyle shots with pets dramatically outperform studio shots on Chewy. Customers are highly emotionally engaged — invest in warm, aspirational imagery with animals.</p></div>
+    <div class="card"><h4>🔄 Autoship (Subscribe & Save)</h4><p>Chewy's biggest differentiator. Getting products enrolled in Autoship creates recurring revenue and significantly higher customer LTV. This is your #1 strategic priority.</p></div>
+    <div class="card"><h4>🤝 Account Manager Relationship</h4><p>Chewy has dedicated vendor account reps. Build that relationship — it's the path to Chewy Picks placements, homepage features, and promotional email inclusions.</p></div>
+    <div class="card"><h4>⭐ Reviews Strategy</h4><p>Chewy reviews are among the most trusted in retail. Encourage post-purchase review requests. Respond to every negative review within 48 hours — Chewy monitors this.</p></div>
+    <div class="card"><h4>📅 Promotional Calendar</h4><p>Chewy runs aggressive promos on Cyber Monday, holiday season, and category awareness months (National Pet Month in May). Submit deal nominations 6 weeks ahead.</p></div>
+  </div>
+</div>
+
+<!-- LOWE'S PAGE -->
+<div id="page-lowes" class="page">
+  <div class="page-header">
+    <div class="page-eyebrow">Channel playbook</div>
+    <h1 class="page-title">Lowe's</h1>
+    <p class="page-desc">Home improvement wholesale vendor. Omnichannel presence (in-store + online) with strict OTIF compliance requirements.</p>
+  </div>
+  <div class="card-grid cols2">
+    <div class="card"><h4>🔩 Technical Specs are #1</h4><p>Dimensions, materials, compatibility lists, installation requirements, certifications, and warranty info. Contractors and DIYers rely on specs to make purchase decisions — incomplete specs = lost sales.</p></div>
+    <div class="card"><h4>📐 Photography Requirements</h4><p>In-context installation/use shots alongside clean white-background images. Include dimensions overlay graphics and "what's in the box" imagery. Show the product installed.</p></div>
+    <div class="card"><h4>📋 OTIF Compliance</h4><p>On-Time In-Full is strictly enforced with a structured chargeback schedule. Use Lowe's routing guide precisely. Late or short shipments will trigger automatic deductions.</p></div>
+    <div class="card"><h4>🏗️ Lowe's Pro Segment</h4><p>Growing B2B channel serving contractors and property managers. If your products serve pros, request Pro category placement and B2B pricing tiers from your buyer.</p></div>
+    <div class="card"><h4>🌸 Spring Black Friday</h4><p>March–April is Lowe's biggest promotional event. Outdoor, garden, and home improvement categories spike. Submit deal nominations to your buyer 8+ weeks ahead.</p></div>
+    <div class="card"><h4>🔌 Vendor Portal Management</h4><p>Use Lowe's Vendor Portal for PO management, item setup, and content updates. Respond to POs and confirmations within required SLA windows to avoid compliance flags.</p></div>
+  </div>
+</div>
+
+<!-- TSC PAGE -->
+<div id="page-tsc" class="page">
+  <div class="page-header">
+    <div class="page-eyebrow">Channel playbook</div>
+    <h1 class="page-title">Tractor Supply Co. (TSC)</h1>
+    <p class="page-desc">Farm, ranch, and rural lifestyle retailer. Customers value durability, practicality, and products built for real work.</p>
+  </div>
+  <div class="card-grid cols2">
+    <div class="card"><h4>👨‍🌾 Know Your Customer</h4><p>Rural homeowners, hobby farmers, ranchers, and equestrian customers. They're practical, value durability, and are skeptical of marketing fluff. Speak their language.</p></div>
+    <div class="card"><h4>✍️ Copy Tone</h4><p>Be direct and practical. Lead with durability, weather resistance, compatibility with equipment, and ease of maintenance. American-made claims resonate strongly with this audience.</p></div>
+    <div class="card"><h4>📸 Real-World Photography</h4><p>Farm, barn, and outdoor settings dramatically outperform studio shots. Show products being used by farmers or ranchers. Include livestock/animals where relevant and authentic.</p></div>
+    <div class="card"><h4>🌱 Key Category Seasons</h4><p>Spring planting, summer farm maintenance, fall harvest prep, and winter animal care are the four major seasonal themes. Build promotional submissions around these cycles.</p></div>
+    <div class="card"><h4>🐄 Core Product Categories</h4><p>Animal feed & supplements, fencing, power tools, outdoor power equipment, workwear, large-breed pet products, and livestock care supplies are TSC's highest-traffic categories.</p></div>
+    <div class="card"><h4>📡 EDI Compliance</h4><p>TSC requires EDI 850/856/810 transactions. Use their supplier portal for item setup. Review routing guide compliance carefully — freight terms (collect vs prepaid) vary by order type.</p></div>
+  </div>
+</div>
+
+<!-- WAYFAIR PAGE -->
+<div id="page-wayfair" class="page">
+  <div class="page-header">
+    <div class="page-eyebrow">Channel playbook</div>
+    <h1 class="page-title">Wayfair</h1>
+    <p class="page-desc">Home goods, furniture, and décor — primarily a dropship model. Customers shop by room inspiration, not just product specs.</p>
+  </div>
+  <div class="card-grid cols2">
+    <div class="card"><h4>🏠 Room Scene Images Are Essential</h4><p>Wayfair customers shop by inspiration — room scenes are not optional, they're the primary selling tool. Multiple angles required. Dimensions callout images are also mandatory.</p></div>
+    <div class="card"><h4>📦 CastleGate Fulfillment</h4><p>Wayfair's fulfillment network dramatically improves search visibility and conversion rates. Enroll your top SKUs in CastleGate for maximum algorithmic placement advantage.</p></div>
+    <div class="card"><h4>💲 Competitive Pricing Algorithm</h4><p>Wayfair's algorithm monitors pricing against competitors. Products priced significantly above comparable items lose search visibility. Monitor and adjust pricing regularly.</p></div>
+    <div class="card"><h4>📉 Return Rate Management</h4><p>Returns are the biggest profitability risk on Wayfair — especially for furniture. Reduce them with accurate dimensions, clear assembly instructions, and realistic room scene images.</p></div>
+    <div class="card"><h4>🎉 Way Day — Annual Sale Event</h4><p>Wayfair's equivalent of Prime Day, typically held in April. Submit products and promotional pricing to Wayfair Extranet 6 weeks ahead. This is your biggest Wayfair revenue opportunity.</p></div>
+    <div class="card"><h4>⚡ Dropship SLA</h4><p>Ship within 1 business day for direct-ship orders. Supplier Performance Score is tied to this — drops in score reduce your algorithmic visibility across all your SKUs on the platform.</p></div>
+  </div>
+</div>
+
+<!-- HOME DEPOT PAGE -->
+<div id="page-homedepot" class="page">
+  <div class="page-header">
+    <div class="page-eyebrow">Channel playbook</div>
+    <h1 class="page-title">Home Depot</h1>
+    <p class="page-desc">The largest US DIY home improvement retailer. Wholesale vendor or Pro Xtra Marketplace seller with omnichannel (in-store + online) presence.</p>
+  </div>
+  <div class="card-grid cols2">
+    <div class="card"><h4>🔧 Technical Completeness</h4><p>Compatibility details, exact dimensions, certifications (UL, CSA, Energy Star, ADA), installation specs, and warranty terms are all critical. Incomplete specs directly reduce search ranking.</p></div>
+    <div class="card"><h4>📸 Application Photography</h4><p>Show products installed or in-use — not just the product itself. Group compatible items together. Include spec sheet graphics as images. Show scale with context.</p></div>
+    <div class="card"><h4>👷 Pro Xtra Channel</h4><p>Home Depot Pro serves contractors and property managers at significant volume. If you sell contractor-grade or jobsite products, request Pro category placement and volume pricing.</p></div>
+    <div class="card"><h4>📋 98%+ OTIF Target</h4><p>The strictest OTIF requirements in your channel mix. Coordinate closely with logistics — routing guides and delivery appointment scheduling are strictly enforced with chargebacks.</p></div>
+    <div class="card"><h4>🌷 Spring Black Friday</h4><p>Home Depot's biggest annual promotional event (late March–April). Submit deal nominations to your merchant contact 8–10 weeks in advance. Outdoor and garden categories peak here.</p></div>
+    <div class="card"><h4>🖥️ Partner Portal Management</h4><p>Home Depot's supplier portal (HDUS) handles PO management, item setup, and content updates. Respond to all PO events within SLA windows. Check for content score alerts weekly.</p></div>
+  </div>
+</div>
+
+<!-- CONTENT PAGE -->
+<div id="page-content" class="page">
+  <div class="page-header">
+    <div class="page-eyebrow">Strategy</div>
+    <h1 class="page-title">Content Excellence</h1>
+    <p class="page-desc">Content is the foundation of discoverability and conversion. Get this right before spending a dollar on advertising.</p>
+  </div>
+
+  <div class="sec-label">Content investment priority</div>
+  <ul class="priority-list">
+    <li class="pri-row"><span class="pri-label">Hero images (white bg, high-res, 2000px+)</span><div class="pri-bar-wrap"><div class="pri-bar" style="width:100%;background:var(--accent4);"></div></div><span class="badge b-red">Critical</span></li>
+    <li class="pri-row"><span class="pri-label">Title with primary keyword front-loaded</span><div class="pri-bar-wrap"><div class="pri-bar" style="width:95%;background:var(--accent4);"></div></div><span class="badge b-red">Critical</span></li>
+    <li class="pri-row"><span class="pri-label">5 benefit-first bullet points</span><div class="pri-bar-wrap"><div class="pri-bar" style="width:90%;background:var(--accent4);"></div></div><span class="badge b-red">Critical</span></li>
+    <li class="pri-row"><span class="pri-label">A+ Content / Enhanced Content (EBC)</span><div class="pri-bar-wrap"><div class="pri-bar" style="width:75%;background:var(--accent3);"></div></div><span class="badge b-amber">High</span></li>
+    <li class="pri-row"><span class="pri-label">Lifestyle + infographic images (slots 2–6)</span><div class="pri-bar-wrap"><div class="pri-bar" style="width:70%;background:var(--accent3);"></div></div><span class="badge b-amber">High</span></li>
+    <li class="pri-row"><span class="pri-label">Backend keywords & all attributes filled</span><div class="pri-bar-wrap"><div class="pri-bar" style="width:65%;background:var(--accent3);"></div></div><span class="badge b-amber">High</span></li>
+    <li class="pri-row"><span class="pri-label">Long-form product description</span><div class="pri-bar-wrap"><div class="pri-bar" style="width:45%;background:var(--accent);"></div></div><span class="badge b-blue">Medium</span></li>
+    <li class="pri-row"><span class="pri-label">Video content</span><div class="pri-bar-wrap"><div class="pri-bar" style="width:35%;background:var(--accent2);"></div></div><span class="badge b-green">When possible</span></li>
+  </ul>
+
+  <div class="sec-label">Content syndication — use a PIM tool</div>
+  <div class="card" style="margin-bottom:10px;">
+    <h4>Why you need a PIM (Product Information Manager)</h4>
+    <p>Tools like <strong>Salsify, Akeneo,</strong> or <strong>Syndigo</strong> let you manage one master content record and push channel-specific versions to all 7 retailers automatically. Manual updates across 7 channels do not scale — a PIM is a necessity, not a luxury.</p>
+  </div>
+
+  <div class="sec-label">Channel-specific content rules</div>
+  <div class="accordion">
+    <button class="acc-header" onclick="toggleAcc(this)">Amazon content rules <span class="acc-arrow">▾</span></button>
+    <div class="acc-body"><ul><li>No HTML in bullet points or description (Amazon strips it)</li><li>Strict image policy: white background hero, no promotional text on main image</li><li>A+ Content requires Brand Registry enrollment</li><li>200-char title limit; 250-byte backend keyword field</li></ul></div>
+  </div>
+  <div class="accordion">
+    <button class="acc-header" onclick="toggleAcc(this)">Walmart content rules <span class="acc-arrow">▾</span></button>
+    <div class="acc-body"><ul><li>Requires GTIN/UPC for all items — no exceptions</li><li>1000-character long description field; HTML allowed</li><li>Uses proprietary Listing Quality Score (LQS) — target 80+</li><li>4+ images required for full content score; 6+ recommended</li></ul></div>
+  </div>
+  <div class="accordion">
+    <button class="acc-header" onclick="toggleAcc(this)">Chewy content rules <span class="acc-arrow">▾</span></button>
+    <div class="acc-body"><ul><li>Pet-specific attributes mandatory: life stage, breed size, species, flavor</li><li>Ingredient list and guaranteed analysis required for consumables</li><li>Lifestyle pet photography strongly recommended over studio shots</li></ul></div>
+  </div>
+  <div class="accordion">
+    <button class="acc-header" onclick="toggleAcc(this)">Lowe's, Home Depot, TSC content rules <span class="acc-arrow">▾</span></button>
+    <div class="acc-body"><ul><li>Technical specs are the highest priority: exact dimensions, materials, certifications</li><li>Compatibility information must be complete and accurate — returns spike without it</li><li>TSC: stress durability, weather resistance, and practical farm/outdoor use in copy tone</li><li>HD/Lowe's: include installation requirements and warranty information in description</li></ul></div>
+  </div>
+  <div class="accordion">
+    <button class="acc-header" onclick="toggleAcc(this)">Wayfair content rules <span class="acc-arrow">▾</span></button>
+    <div class="acc-body"><ul><li>Room scene lifestyle images are required — product-only shots significantly underperform</li><li>Multiple angles required: front, back, side, detail, and in-room</li><li>Accurate dimensions are critical — inaccurate sizing is the #1 cause of returns</li><li>Upload via Wayfair Extranet; use their image spec guidelines precisely</li></ul></div>
+  </div>
+
+  <div class="sec-label">Content audit cadence</div>
+  <ul class="checklist">
+    <li><span class="check-mark">✓</span> <strong>Weekly:</strong> Fix suppressed or incomplete listings flagged by channel dashboards</li>
+    <li><span class="check-mark">✓</span> <strong>Monthly:</strong> Review conversion rates by ASIN — low CVR triggers a content refresh</li>
+    <li><span class="check-mark">✓</span> <strong>Quarterly:</strong> Full keyword re-research; update titles and bullets with fresh data</li>
+    <li><span class="check-mark">✓</span> <strong>Seasonally:</strong> Update hero images and A+ for seasonal relevance (winter, summer, holidays)</li>
+  </ul>
+</div>
+
+<!-- SALES PAGE -->
+<div id="page-sales" class="page">
+  <div class="page-header">
+    <div class="page-eyebrow">Strategy</div>
+    <h1 class="page-title">Sales & Promotions</h1>
+    <p class="page-desc">How to drive revenue growth through pricing strategy, advertising, and promotional planning across all channels.</p>
+  </div>
+
+  <div class="sec-label">Pricing strategy fundamentals</div>
+  <div class="card-grid cols2">
+    <div class="card">
+      <h4>📊 MAP Policy — enforce it</h4>
+      <p>Establish a Minimum Advertised Price policy and enforce it across all sellers. MAP violations on Amazon trigger automatic suppression on other channels (Walmart price parity check). This is table stakes for channel health.</p>
+    </div>
+    <div class="card">
+      <h4>🔄 Repricing tools (Amazon)</h4>
+      <p>Tools like Informed.co or BQool automate Buy Box price optimization in real-time. Set floors (MAP) and ceilings (target margin). Manual repricing on Amazon is not viable at scale.</p>
+    </div>
+  </div>
+
+  <div class="sec-label">Promotional tools by channel</div>
+  <div class="accordion">
+    <button class="acc-header" onclick="toggleAcc(this)">Amazon promotions toolkit <span class="acc-arrow">▾</span></button>
+    <div class="acc-body"><ul><li><strong>Lightning Deals:</strong> 4–12 hour flash deals on the Deals page — apply via Seller Central, limited to eligible ASINs</li><li><strong>7-Day Deals:</strong> Extended deal visibility on the deals page — better for new launches</li><li><strong>Coupons:</strong> Percentage or dollar-off shown in search results with a green badge — low cost, high visibility</li><li><strong>Subscribe & Save:</strong> 5–15% discount for repeat orders — builds recurring revenue</li><li><strong>Prime Exclusive Discounts:</strong> Prime member-only pricing — boosts Prime Day and everyday visibility</li></ul></div>
+  </div>
+  <div class="accordion">
+    <button class="acc-header" onclick="toggleAcc(this)">Walmart promotions toolkit <span class="acc-arrow">▾</span></button>
+    <div class="acc-body"><ul><li><strong>Rollback:</strong> Temporary price reduction featured on Walmart.com homepage and category pages</li><li><strong>Savings Spotlight:</strong> Curated deals placement with high visibility — requires buyer approval</li><li><strong>Walmart+ Member Deals:</strong> Exclusive pricing for Walmart+ subscribers — growing importance</li><li><strong>Clearance:</strong> Last resort — use only for end-of-life SKUs, as it signals distress to the algorithm</li></ul></div>
+  </div>
+  <div class="accordion">
+    <button class="acc-header" onclick="toggleAcc(this)">Seasonal calendar — all channels <span class="acc-arrow">▾</span></button>
+    <div class="acc-body"><ul>
+      <li><strong>Q1 (Jan–Mar):</strong> New Year content reset, Valentine's Day (relevant cats), begin Prime Day planning</li>
+      <li><strong>Q2 (Apr–Jun):</strong> Spring Black Friday on Lowe's/HD, Mother's Day, Memorial Day, Way Day (Wayfair), FBA inventory build for Prime Day</li>
+      <li><strong>Q3 (Jul–Sep):</strong> Amazon Prime Day (mid-July, your #1 Amazon event), Back to School, Labor Day, Q4 inventory planning begins</li>
+      <li><strong>Q4 (Oct–Dec):</strong> Halloween promos, Amazon Early Black Friday (late Oct), Black Friday/Cyber Monday all-hands, holiday gift guide submissions, free shipping deadlines</li>
+    </ul></div>
+  </div>
+
+  <div class="sec-label">Buy Box management (Amazon)</div>
+  <ul class="checklist">
+    <li><span class="check-mark">✓</span> Price competitively — #1 factor for 3P sellers winning the Buy Box</li>
+    <li><span class="check-mark">✓</span> Use FBA or Seller Fulfilled Prime to improve shipping eligibility</li>
+    <li><span class="check-mark">✓</span> Maintain seller feedback score above 95%</li>
+    <li><span class="check-mark">✓</span> Keep ODR under 1% — fastest way to lose Buy Box eligibility</li>
+    <li><span class="check-mark">✓</span> Monitor for unauthorized sellers daily using SellerApp or manual checks</li>
+  </ul>
+</div>
+
+<!-- OPS PAGE -->
+<div id="page-ops" class="page">
+  <div class="page-header">
+    <div class="page-eyebrow">Strategy</div>
+    <h1 class="page-title">Operations</h1>
+    <p class="page-desc">The unglamorous work that keeps everything running — compliance, inventory, chargebacks, and daily monitoring.</p>
+  </div>
+
+  <div class="sec-label">Chargeback prevention</div>
+  <div class="card-grid cols2">
+    <div class="card">
+      <h4>Amazon vendor chargebacks</h4>
+      <ul>
+        <li>PO compliance: ship on-time, use correct GS1-128 carton labels</li>
+        <li>Submit ASN (Advanced Ship Notice) before delivery — avoid PO Accuracy chargebacks</li>
+        <li>Follow prep compliance: poly-bagging, bubble wrap, and label placement per Amazon specs</li>
+        <li>Dispute chargebacks within 30 days via Vendor Central — dispute win rates can reach 60-70% with proper documentation</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Retail EDI compliance</h4>
+      <ul>
+        <li>Walmart, Lowe's, and Home Depot require EDI 850/856/810 transactions</li>
+        <li>On-time fill rate targets are typically 95%+ or chargebacks apply automatically</li>
+        <li>Wayfair: direct-ship model — ship within 1 business day or lose Supplier Score points</li>
+        <li>TSC: review routing guide compliance for collect vs prepaid freight on every PO</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sec-label">Amazon FBA inventory health</div>
+  <ul class="checklist">
+    <li><span class="check-mark">✓</span> IPI (Inventory Performance Index) above 400 to avoid restock limits</li>
+    <li><span class="check-mark">✓</span> Review aged inventory monthly — 181–270 day units incur long-term storage fees</li>
+    <li><span class="check-mark">✓</span> Use FBA removal orders for slow movers before storage fee charge dates</li>
+    <li><span class="check-mark">✓</span> Set reorder points using "Restock Inventory" tool + your own sales velocity data</li>
+    <li><span class="check-mark">✓</span> Spread inbound shipments across multiple FC locations when possible to reduce restock limits</li>
+  </ul>
+
+  <div class="sec-label">Tools stack</div>
+  <div class="tag-cloud">
+    <span class="tag">Helium 10</span><span class="tag">Jungle Scout</span><span class="tag">Salsify</span>
+    <span class="tag">Akeneo</span><span class="tag">Syndigo</span><span class="tag">Vendor Central</span>
+    <span class="tag">Seller Central</span><span class="tag">Walmart Supplier Center</span>
+    <span class="tag">Chewy Supplier Portal</span><span class="tag">Wayfair Extranet</span>
+    <span class="tag">SPS Commerce (EDI)</span><span class="tag">CommerceHub</span>
+    <span class="tag">Informed.co (repricing)</span><span class="tag">Pacvue (PPC)</span>
+    <span class="tag">Linnworks (inventory)</span><span class="tag">DataHawk</span>
+    <span class="tag">SellerApp</span>
+  </div>
+</div>
+
+<!-- KPIs PAGE -->
+<div id="page-kpis" class="page">
+  <div class="page-header">
+    <div class="page-eyebrow">Strategy</div>
+    <h1 class="page-title">KPIs & Reporting</h1>
+    <p class="page-desc">What you measure determines what you manage. These are the metrics that drive decisions across all 7 channels.</p>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi-card"><div class="kpi-label">Ordered Revenue</div><div class="kpi-val" style="color:var(--accent2);">↑ MoM</div><div class="kpi-sub">Primary growth metric</div></div>
+    <div class="kpi-card"><div class="kpi-label">Conversion Rate</div><div class="kpi-val">% by ASIN</div><div class="kpi-sub">Content health signal</div></div>
+    <div class="kpi-card"><div class="kpi-label">ACoS</div><div class="kpi-val" style="color:var(--accent3);">&lt;25%</div><div class="kpi-sub">Ad efficiency</div></div>
+    <div class="kpi-card"><div class="kpi-label">Buy Box %</div><div class="kpi-val" style="color:var(--accent);">&gt;90%</div><div class="kpi-sub">Competitive health</div></div>
+  </div>
+
+  <div class="sec-label">KPIs by channel — click to expand</div>
+  <div class="accordion">
+    <button class="acc-header" onclick="toggleAcc(this)">🟠 Amazon KPIs <span class="acc-arrow">▾</span></button>
+    <div class="acc-body"><ul>
+      <li>Glance Views (traffic), Conversion Rate, Ordered Units, Ordered Revenue</li>
+      <li>ACoS, TACoS, ROAS, CTR per campaign (weekly)</li>
+      <li>Buy Box win % per ASIN</li>
+      <li>Account Health Score, ODR, Late Shipment Rate</li>
+      <li>FBA IPI Score, Stranded Inventory %, Sell-through rate</li>
+      <li>Star rating average and review velocity per ASIN</li>
+    </ul></div>
+  </div>
+  <div class="accordion">
+    <button class="acc-header" onclick="toggleAcc(this)">🔵 Walmart KPIs <span class="acc-arrow">▾</span></button>
+    <div class="acc-body"><ul>
+      <li>GMV (Gross Merchandise Value), Units Sold</li>
+      <li>Listing Quality Score (LQS) — aim for 80+</li>
+      <li>Pro Seller Badge eligibility metrics</li>
+      <li>On-Time Delivery Rate (&gt;95%), Valid Tracking Rate (&gt;99%)</li>
+      <li>Cancellation Rate (&lt;2%)</li>
+    </ul></div>
+  </div>
+  <div class="accordion">
+    <button class="acc-header" onclick="toggleAcc(this)">🟢 Wayfair KPIs <span class="acc-arrow">▾</span></button>
+    <div class="acc-body"><ul>
+      <li>Revenue per SKU, Return Rate (target below 10% for furniture)</li>
+      <li>Supplier Performance Score — drives algorithmic visibility</li>
+      <li>On-Time Ship Rate (ship within 1 business day for dropship)</li>
+      <li>Damage-in-Transit rate — impacts repeat business and placement</li>
+    </ul></div>
+  </div>
+  <div class="accordion">
+    <button class="acc-header" onclick="toggleAcc(this)">🟡 Lowe's / Home Depot KPIs <span class="acc-arrow">▾</span></button>
+    <div class="acc-body"><ul>
+      <li>Sell-through rate in stores vs online (omnichannel view)</li>
+      <li>OTIF (On-Time In-Full) delivery compliance — chargeback trigger</li>
+      <li>Content completeness score via supplier portals</li>
+      <li>Review count and average star rating on product pages</li>
+    </ul></div>
+  </div>
+
+  <div class="sec-label">Reporting cadence</div>
+  <ul class="checklist">
+    <li><span class="check-mark">✓</span> <strong>Daily:</strong> Sales vs. prior period, account health alerts, ad spend pacing check</li>
+    <li><span class="check-mark">✓</span> <strong>Weekly:</strong> Channel-by-channel revenue summary + top/bottom ASIN performance</li>
+    <li><span class="check-mark">✓</span> <strong>Monthly:</strong> Full KPI scorecard, ACoS review, content audit results, chargeback summary</li>
+    <li><span class="check-mark">✓</span> <strong>Quarterly:</strong> YoY growth analysis, category share estimates, strategic planning review</li>
+  </ul>
+</div>
+
+</main>
+</div>
+
+<script>
+function showPage(id, navEl) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const page = document.getElementById('page-' + id);
+  if (page) page.classList.add('active');
+  if (navEl && navEl.classList) navEl.classList.add('active');
+  else {
+    document.querySelectorAll('.nav-item').forEach(n => {
+      if (n.getAttribute('onclick') && n.getAttribute('onclick').includes("'" + id + "'")) {
+        n.classList.add('active');
+      }
+    });
+  }
+  window.scrollTo(0, 0);
+}
+
+function toggleAcc(header) {
+  const body = header.nextElementSibling;
+  const isOpen = header.classList.contains('open');
+  document.querySelectorAll('.acc-header.open').forEach(h => {
+    h.classList.remove('open');
+    h.nextElementSibling.classList.remove('open');
+  });
+  if (!isOpen) {
+    header.classList.add('open');
+    body.classList.add('open');
+  }
+}
+</script>
+</body>
+</html>
